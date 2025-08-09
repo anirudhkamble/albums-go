@@ -1,0 +1,51 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: albums-gateway
+  namespace: albums
+spec:
+  gatewayClassName: istio
+  listeners:
+  - name: http
+    port: 80
+    protocol: HTTP
+    allowedRoutes:
+      namespaces:
+        from: Same
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: albums
+  namespace: albums
+spec:
+  hosts:
+  - albums
+  gateways:
+  - albums-gateway.albums.svc.cluster.local
+  http:
+  - match:
+    - uri:
+        exact: /albums
+    route:
+    - destination:
+        host: albums
+        port:
+          number: 8081
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: albums
+  namespace: albums
+spec:
+  parentRefs:
+  - name: albums-gateway
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: albums
+      port: 8081
