@@ -1,10 +1,10 @@
 #! /bin/bash
 
-# echo "Building docker image..."
-# docker build -t albums:latest .
+echo "Building docker image..."
+docker build -t albums:latest .
 
-# echo "Creating namespace"
-# kubectl create namespace albums
+echo "Creating namespace"
+kubectl create namespace albums
 
 echo "Label namespace for istio injection"
 kubectl label namespace albums istio-injection=enabled
